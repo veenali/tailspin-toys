@@ -45,6 +45,8 @@ ALL UI components MUST use dark theme colors:
 - Prefer utility classes over custom CSS when possible
 - Use semantic grouping: layout, spacing, colors, typography
 - Keep utility combinations readable and maintainable
+- Use two spaces for indentation, single quotes in embedded TypeScript, and trailing commas in multiline TypeScript structures.
+- Do not add comments that merely translate a Tailwind class list; comment only the design or accessibility rationale when it is not apparent from the markup.
 
 ## Modern UI Patterns
 
