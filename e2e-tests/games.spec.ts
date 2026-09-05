@@ -133,4 +133,34 @@ test.describe('Game Listing and Navigation', () => {
       await expect(page.getByTestId('not-found-home-link')).toBeVisible();
     });
   });
+
+  test('should filter games by category and publisher', async ({ page }) => {
+    await page.goto('/');
+    const gamesGrid = page.getByTestId('games-grid');
+    const gameCards = page.getByTestId('game-card');
+    await expect(gamesGrid).toBeVisible();
+    const initialCount = await gameCards.count();
+
+    await page.getByLabel('Strategy').check();
+    await expect(page.getByTestId('filter-status')).toContainText('Showing 4 games');
+    expect(await page.locator('[data-testid="game-card"]:visible').count()).toBe(4);
+    await expect(page).toHaveURL(/category=1/);
+
+    await page.getByTestId('publisher-filter').selectOption({ label: 'CodeForge Studios' });
+    await expect(page.getByTestId('filter-status')).toContainText('Showing 1 game');
+    expect(await page.locator('[data-testid="game-card"]:visible').count()).toBe(1);
+    await expect(page).toHaveURL(/category=1.*publisher=1|publisher=1.*category=1/);
+    expect(initialCount).toBeGreaterThan(4);
+  });
+
+  test('should ignore invalid filters from the URL', async ({ page }) => {
+    await page.goto('/?category=99999&publisher=99999');
+    await expect(page.getByTestId('filter-status')).toHaveText('Showing 21 games');
+    await expect(page.getByTestId('filtered-empty-state')).toBeHidden();
+    await expect(page.getByTestId('clear-filters')).toBeVisible();
+
+    await page.getByTestId('clear-filters').click();
+    await expect(page.getByTestId('filter-status')).toContainText('Showing 21 games');
+    await expect(page).toHaveURL('/');
+  });
 });
